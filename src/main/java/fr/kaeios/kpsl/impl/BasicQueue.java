@@ -8,22 +8,19 @@ import fr.kaeios.kpsl.api.queue.QueueingPolicy;
 
 import java.util.*;
 
-public class BasicQueue implements Buffer {
+public class BasicQueue extends BasicComponent implements Buffer {
 
     private final int capacity;
     private final Queue<Request> requests;
 
-    private List<Component> outputs = new ArrayList<>();
-
     private final QueueingPolicy queueingPolicy;
-    private final DispatchPolicy dispatchPolicy;
 
     public BasicQueue(int capacity, QueueingPolicy queueingPolicy, DispatchPolicy dispatchPolicy) {
+        super(dispatchPolicy);
         this.capacity = capacity;
         this.requests = new ArrayDeque<>(capacity);
 
         this.queueingPolicy = queueingPolicy;
-        this.dispatchPolicy = dispatchPolicy;
     }
 
     @Override
@@ -42,23 +39,8 @@ public class BasicQueue implements Buffer {
     }
 
     @Override
-    public List<Component> getOutputs() {
-        return Collections.unmodifiableList(this.outputs);
-    }
-
-    @Override
     public List<Request> getResidents() {
         return this.getPopulation();
-    }
-
-    @Override
-    public DispatchPolicy getDispatchPolicy() {
-        return this.dispatchPolicy;
-    }
-
-    @Override
-    public void connectTo(Component component) {
-        this.outputs.add(component);
     }
 
     @Override
@@ -76,7 +58,7 @@ public class BasicQueue implements Buffer {
 
     @Override
     public void onTick(double elapsedTime) {
-        Optional<Component> output = this.getDispatchPolicy().chooseOutput(this.outputs);
+        Optional<Component> output = this.getSelectedOutput();
         if(output.isEmpty()) return;
 
         Optional<Request> oRequest = pollRequest();
