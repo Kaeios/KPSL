@@ -1,10 +1,14 @@
 package fr.kaeios.kpsl;
 
+import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.Service;
 import fr.kaeios.kpsl.api.queue.Buffer;
 import fr.kaeios.kpsl.impl.*;
+import fr.kaeios.kpsl.impl.visitors.SimulationVisitor;
 
 public class Main {
+
+    static Component s1;
 
     static Buffer q1;
     static Service c1;
@@ -41,13 +45,19 @@ public class Main {
      */
 
     public static void main(String[] args) {
-        q1 = new BasicQueue(5, FIFOPolicy.getInstance(), RoundRobinDispatcher.getInstance());
-        q2 = new BasicQueue(5, FIFOPolicy.getInstance(), RoundRobinDispatcher.getInstance());
-        q3 = new BasicQueue(5, FIFOPolicy.getInstance(), RoundRobinDispatcher.getInstance());
+        s1 = new BasicArrivalSource(new RoundRobinDispatcher(), 0.5D);
 
-        c1 = new BasicService(3.0f, RoundRobinDispatcher.getInstance());
-        c2 = new BasicService(2.0f, RoundRobinDispatcher.getInstance());
-        c3 = new BasicService(2.0f, RoundRobinDispatcher.getInstance());
+        q1 = new BasicQueue(5, FIFOPolicy.getInstance(), new RoundRobinDispatcher());
+        q2 = new BasicQueue(5, FIFOPolicy.getInstance(), new RoundRobinDispatcher());
+        q3 = new BasicQueue(5, FIFOPolicy.getInstance(), new RoundRobinDispatcher());
+
+        c1 = new BasicService(3.0f, new RoundRobinDispatcher());
+        c2 = new BasicService(2.0f, new RoundRobinDispatcher());
+        c3 = new BasicService(2.0f, new RoundRobinDispatcher());
+
+        s1.connectTo(q1);
+        s1.connectTo(q2);
+        s1.connectTo(q3);
 
         q1.connectTo(c1);
         q2.connectTo(c2);
@@ -56,18 +66,10 @@ public class Main {
         c1.connectTo(q3);
         c2.connectTo(q3);
 
-        q1.onArrival(new DummyRequest());
-        q1.onArrival(new DummyRequest());
-        q1.onArrival(new DummyRequest());
-
-        q2.onArrival(new DummyRequest());
-        q2.onArrival(new DummyRequest());
-        q2.onArrival(new DummyRequest());
-        q2.onArrival(new DummyRequest());
-        q2.onArrival(new DummyRequest());
-
         for(double t = 0.0D; t <= 10.0D; t+=0.1D)
         {
+            SimulationVisitor visitor = new SimulationVisitor(0.1D);
+
             System.out.println(
                     "t=" + Math.round((t) * 100)/100.0
                             + ", q1 = " + q1.getPopulation().size()
@@ -78,12 +80,7 @@ public class Main {
                             + ", c3 = " + (c3.getCurrentRequest() == null ? "0" : "1")
             );
 
-            q1.onTick(0.1D);
-            q2.onTick(0.1D);
-            c1.onTick(0.1D);
-            c2.onTick(0.1D);
-            q3.onTick(0.1D);
-            c3.onTick(0.1D);
+            visitor.visit(s1);
         }
     }
 

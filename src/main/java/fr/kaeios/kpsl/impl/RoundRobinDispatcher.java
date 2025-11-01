@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public class RoundRobinDispatcher implements DispatchPolicy {
 
-    private static final RoundRobinDispatcher INSTANCE = new RoundRobinDispatcher();
-
     private int index = 0;
 
     @Override
@@ -24,15 +22,12 @@ public class RoundRobinDispatcher implements DispatchPolicy {
             if(component == null) continue;
             if(component.isBusy()) continue;
 
-            index = (index + i) % size;
+            index = (index + i + 1) % size;
+
             return Optional.of(component);
         }
 
         return Optional.empty();
-    }
-
-    public static RoundRobinDispatcher getInstance() {
-        return INSTANCE;
     }
 
 }

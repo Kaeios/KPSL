@@ -2,7 +2,6 @@ package fr.kaeios.kpsl.impl;
 
 import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.DispatchPolicy;
-import fr.kaeios.kpsl.api.Request;
 
 import java.util.Collections;
 import java.util.LinkedList;
