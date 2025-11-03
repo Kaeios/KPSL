@@ -1,4 +1,4 @@
-package fr.kaeios.kpsl.impl;
+package fr.kaeios.kpsl.impl.routing;
 
 import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.DispatchPolicy;

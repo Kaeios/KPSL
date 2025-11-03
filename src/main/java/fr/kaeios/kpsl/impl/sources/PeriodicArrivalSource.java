@@ -1,21 +1,23 @@
-package fr.kaeios.kpsl.impl;
+package fr.kaeios.kpsl.impl.sources;
 
 import fr.kaeios.kpsl.api.DispatchPolicy;
 import fr.kaeios.kpsl.api.Request;
+import fr.kaeios.kpsl.impl.BasicComponent;
+import fr.kaeios.kpsl.impl.requests.DummyRequest;
 
 import java.util.Collections;
 import java.util.List;
 
-public class BasicArrivalSource extends BasicComponent{
+public class PeriodicArrivalSource extends BasicComponent {
 
-    private final double interval;
+    private final double period;
 
     private double currentTime = 0.0D;
 
-    public BasicArrivalSource(DispatchPolicy dispatchPolicy, double interval) {
+    public PeriodicArrivalSource(DispatchPolicy dispatchPolicy, double period) {
         super(dispatchPolicy);
 
-        this.interval = interval;
+        this.period = period;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class BasicArrivalSource extends BasicComponent{
     public void onTick(double elapsedTime) {
         this.currentTime += elapsedTime;
 
-        if(currentTime >= interval) {
+        if(currentTime >= period) {
             currentTime = 0.0D;
             this.getSelectedOutput().ifPresent(output -> output.onArrival(new DummyRequest()));
         }

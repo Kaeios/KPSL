@@ -3,7 +3,11 @@ package fr.kaeios.kpsl;
 import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.Service;
 import fr.kaeios.kpsl.api.queue.Buffer;
-import fr.kaeios.kpsl.impl.*;
+import fr.kaeios.kpsl.impl.queues.BasicQueue;
+import fr.kaeios.kpsl.impl.queues.policies.FIFOPolicy;
+import fr.kaeios.kpsl.impl.routing.RoundRobinDispatcher;
+import fr.kaeios.kpsl.impl.services.BasicService;
+import fr.kaeios.kpsl.impl.sources.PeriodicArrivalSource;
 import fr.kaeios.kpsl.impl.visitors.SimulationVisitor;
 
 public class Main {
@@ -45,7 +49,7 @@ public class Main {
      */
 
     public static void main(String[] args) {
-        s1 = new BasicArrivalSource(new RoundRobinDispatcher(), 0.5D);
+        s1 = new PeriodicArrivalSource(new RoundRobinDispatcher(), 0.5D);
 
         q1 = new BasicQueue(5, FIFOPolicy.getInstance(), new RoundRobinDispatcher());
         q2 = new BasicQueue(5, FIFOPolicy.getInstance(), new RoundRobinDispatcher());

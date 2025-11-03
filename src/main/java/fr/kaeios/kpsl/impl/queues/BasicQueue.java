@@ -1,10 +1,11 @@
-package fr.kaeios.kpsl.impl;
+package fr.kaeios.kpsl.impl.queues;
 
 import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.DispatchPolicy;
 import fr.kaeios.kpsl.api.Request;
 import fr.kaeios.kpsl.api.queue.Buffer;
 import fr.kaeios.kpsl.api.queue.QueueingPolicy;
+import fr.kaeios.kpsl.impl.BasicComponent;
 
 import java.util.*;
 

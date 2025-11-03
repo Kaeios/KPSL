@@ -1,4 +1,4 @@
-package fr.kaeios.kpsl.impl;
+package fr.kaeios.kpsl.impl.queues.policies;
 
 import fr.kaeios.kpsl.api.Request;
 import fr.kaeios.kpsl.api.queue.QueueingPolicy;

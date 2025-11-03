@@ -1,4 +1,4 @@
-package fr.kaeios.kpsl.impl;
+package fr.kaeios.kpsl.impl.requests;
 
 import fr.kaeios.kpsl.api.Request;
 

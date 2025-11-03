@@ -1,9 +1,10 @@
-package fr.kaeios.kpsl.impl;
+package fr.kaeios.kpsl.impl.services;
 
 import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.DispatchPolicy;
 import fr.kaeios.kpsl.api.Request;
 import fr.kaeios.kpsl.api.Service;
+import fr.kaeios.kpsl.impl.BasicComponent;
 
 import java.util.ArrayList;
 import java.util.List;
