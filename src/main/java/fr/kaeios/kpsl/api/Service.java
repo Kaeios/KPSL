@@ -1,7 +1,9 @@
 package fr.kaeios.kpsl.api;
 
+import java.util.List;
+
 public interface Service extends Component {
 
-    Request getCurrentRequest();
+    List<Request> getCurrentRequest();
 
 }

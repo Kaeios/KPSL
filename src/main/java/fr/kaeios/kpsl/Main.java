@@ -51,9 +51,9 @@ public class Main {
         q2 = new BasicQueue(5, FIFOPolicy.getInstance(), new RoundRobinDispatcher());
         q3 = new BasicQueue(5, FIFOPolicy.getInstance(), new RoundRobinDispatcher());
 
-        c1 = new BasicService(3.0f, new RoundRobinDispatcher());
-        c2 = new BasicService(2.0f, new RoundRobinDispatcher());
-        c3 = new BasicService(2.0f, new RoundRobinDispatcher());
+        c1 = new BasicService(3.0f, new RoundRobinDispatcher(), 1);
+        c2 = new BasicService(2.0f, new RoundRobinDispatcher(), 1);
+        c3 = new BasicService(2.0f, new RoundRobinDispatcher(), 1);
 
         s1.connectTo(q1);
         s1.connectTo(q2);

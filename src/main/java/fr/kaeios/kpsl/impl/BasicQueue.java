@@ -59,14 +59,18 @@ public class BasicQueue extends BasicComponent implements Buffer {
     @Override
     public void onTick(double elapsedTime) {
         Optional<Component> output = this.getSelectedOutput();
-        if(output.isEmpty()) return;
 
-        Optional<Request> oRequest = pollRequest();
-        if(oRequest.isEmpty()) return;
+        while(output.isPresent()) {
+            Optional<Request> oRequest = pollRequest();
+            if(oRequest.isEmpty()) return;
 
-        Request request = oRequest.get();
-        output.get().onArrival(request);
-        requests.remove(request);
+            Request request = oRequest.get();
+            output.get().onArrival(request);
+            requests.remove(request);
+
+            output = this.getSelectedOutput();
+        }
+
     }
 
 }

@@ -5,61 +5,75 @@ import fr.kaeios.kpsl.api.DispatchPolicy;
 import fr.kaeios.kpsl.api.Request;
 import fr.kaeios.kpsl.api.Service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class BasicService extends BasicComponent implements Service {
 
     private final double serviceTime;
+    private final int serverCount;
 
-    private Request currentRequest;
-    private double currentTime = 0.0D;
+    private List<RequestHandler> currentRequests;
 
-    public BasicService(double serviceTime, DispatchPolicy dispatchPolicy) {
+    public BasicService(double serviceTime, DispatchPolicy dispatchPolicy, int serverCount) {
         super(dispatchPolicy);
         this.serviceTime = serviceTime;
+        this.serverCount = serverCount;
+        this.currentRequests = new ArrayList<>(serverCount);
     }
 
     @Override
-    public Request getCurrentRequest() {
-        return currentRequest;
+    public List<Request> getCurrentRequest() {
+        return currentRequests.stream().map(handler -> handler.request).toList();
     }
 
     @Override
     public List<Request> getResidents() {
-        return currentRequest == null ? Collections.emptyList() : Collections.singletonList(currentRequest);
+        return getCurrentRequest();
     }
 
     @Override
     public boolean isBusy() {
-        return this.currentRequest != null && this.currentTime < this.serviceTime;
+        return this.currentRequests.size() >= this.serverCount;
     }
 
     @Override
     public void onArrival(Request request) {
         if(!isBusy()) {
-            this.currentRequest = request;
-            this.currentTime = 0.0D;
+            this.currentRequests.add(new RequestHandler(request));
         } else {
-            throw new IllegalStateException("Trying to accept new request while previous not finished");
+            throw new IllegalStateException("Service is too busy to accept new requests");
         }
     }
 
     @Override
     public void onTick(double elapsedTime) {
-        if(currentRequest == null) return;
+        this.currentRequests.forEach(handler -> {
+            handler.currentTime += elapsedTime;
 
-        this.currentTime += elapsedTime;
+            if(handler.currentTime >= serviceTime) {
+                Optional<Component> output = this.getSelectedOutput();
+                output.ifPresent(component -> component.onArrival(handler.request));
+            }
+        });
 
-        if(currentTime > serviceTime) {
-            Optional<Component> output = this.getSelectedOutput();
+        List<RequestHandler> toRemove =  this.currentRequests.stream()
+                .filter(handler -> handler.currentTime >= serviceTime)
+                .toList();
 
-            output.ifPresent(component -> component.onArrival(this.currentRequest));
+        this.currentRequests.removeAll(toRemove);
+    }
 
-            this.currentRequest = null;
-            this.currentTime = 0.0D;
+    private static final class RequestHandler {
+
+        final Request request;
+        double currentTime = 0.0D;
+
+        private RequestHandler(Request request) {
+            this.request = request;
         }
+
     }
 
 }
