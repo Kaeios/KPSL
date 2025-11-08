@@ -8,8 +8,9 @@ import fr.kaeios.kpsl.impl.queues.BasicQueue;
 import fr.kaeios.kpsl.impl.queues.policies.FIFOPolicy;
 import fr.kaeios.kpsl.impl.routing.RoundRobinDispatcher;
 import fr.kaeios.kpsl.impl.services.BasicService;
+import fr.kaeios.kpsl.gui.drawing.DrawingVisitor;
 import fr.kaeios.kpsl.impl.sources.PeriodicArrivalSource;
-import fr.kaeios.kpsl.impl.visitors.DrawingVisitor;
+import fr.kaeios.kpsl.impl.visitors.SimulationVisitor;
 
 public class Main {
 
@@ -49,7 +50,7 @@ public class Main {
     Client ---- Local Server --- Origin Server
      */
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // --- Queues (Buffers) ---
 // DNS queue
         BasicQueue dnsQueue = new BasicQueue(10, FIFOPolicy.getInstance(), new RoundRobinDispatcher());
@@ -83,7 +84,12 @@ public class Main {
 
         BasicService origin = new BasicService(5.0f, new RoundRobinDispatcher(), 1);
 
+
+        PeriodicArrivalSource s = new PeriodicArrivalSource(new RoundRobinDispatcher(), 0.2f);
+
 // --- Connect DNS to Local Servers ---
+        s.connectTo(dnsQueue);
+
         dnsQueue.connectTo(dns);
         dns.connectTo(qLocal1);
         dns.connectTo(qLocal2);
@@ -120,28 +126,21 @@ public class Main {
         MainView view = new MainView();
 
         DrawingVisitor visitor = new DrawingVisitor(view);
-        visitor.visit(dnsQueue);
+        visitor.visit(s);
 
         view.disp();
         view.setVisible(true);
 
-//
-//        for(double t = 0.0D; t <= 10.0D; t+=0.1D)
-//        {
-//            SimulationVisitor visitor = new SimulationVisitor(0.1D);
-//
-//            System.out.println(
-//                    "t=" + Math.round((t) * 100)/100.0
-//                            + ", q1 = " + q1.getPopulation().size()
-//                            + ", q2 = " + q2.getPopulation().size()
-//                            + ", q3 = " + q3.getPopulation().size()
-//                            + ", c1 = " + (c1.getCurrentRequest() == null ? "0" : "1")
-//                            + ", c2 = " + (c2.getCurrentRequest() == null ? "0" : "1")
-//                            + ", c3 = " + (c3.getCurrentRequest() == null ? "0" : "1")
-//            );
-//
-//            visitor.visit(s1);
-//        }
+        for(double t = 0.0D; t <= 10.0D; t+=0.1D)
+        {
+            SimulationVisitor v2 = new SimulationVisitor(0.1D);
+
+            v2.visit(s);
+
+            view.renderView();
+
+            Thread.sleep(500);
+        }
     }
 
 }

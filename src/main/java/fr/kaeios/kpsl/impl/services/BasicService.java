@@ -4,6 +4,9 @@ import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.DispatchPolicy;
 import fr.kaeios.kpsl.api.Request;
 import fr.kaeios.kpsl.api.Service;
+import fr.kaeios.kpsl.gui.api.PlacedComponent;
+import fr.kaeios.kpsl.gui.api.Point;
+import fr.kaeios.kpsl.gui.drawing.PlacedComponentFactoryVisitor;
 import fr.kaeios.kpsl.impl.BasicComponent;
 
 import java.util.ArrayList;
@@ -37,6 +40,11 @@ public class BasicService extends BasicComponent implements Service {
     @Override
     public boolean isBusy() {
         return this.currentRequests.size() >= this.serverCount;
+    }
+
+    @Override
+    public PlacedComponent accept(PlacedComponentFactoryVisitor visitor, Point position) {
+        return visitor.visitService(this, position);
     }
 
     @Override

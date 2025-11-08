@@ -32,7 +32,7 @@ public class MainView extends JFrame {
         setResizable(false);
     }
 
-    private void renderView() {
+    public void renderView() {
         drawPanel.repaint();
     }
 

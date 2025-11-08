@@ -10,18 +10,19 @@ import java.awt.*;
 
 public class BufferComponent implements PlacedComponent {
 
-    private final Renderer renderer;
+    private final Renderer<Buffer> renderer = new BufferRenderer();
+    private final Buffer buffer;
 
     private Point position;
 
-    public BufferComponent(Point initialPosition) {
-        this.renderer = new BufferRenderer();
+    public BufferComponent(Buffer buffer, Point initialPosition) {
+        this.buffer = buffer;
         this.position = initialPosition;
     }
 
     @Override
     public void place(Graphics graphics) {
-        Image img = renderer.render();
+        Image img = renderer.render(this.buffer);
 
         graphics.drawImage(img, position.x(), position.y(), null);
     }

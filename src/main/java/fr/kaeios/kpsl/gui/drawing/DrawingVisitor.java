@@ -1,20 +1,14 @@
-package fr.kaeios.kpsl.impl.visitors;
+package fr.kaeios.kpsl.gui.drawing;
 
 import fr.kaeios.kpsl.api.Component;
 import fr.kaeios.kpsl.api.Service;
 import fr.kaeios.kpsl.api.queue.Buffer;
 import fr.kaeios.kpsl.api.visitor.ComponentVisitor;
-import fr.kaeios.kpsl.gui.*;
 import fr.kaeios.kpsl.gui.api.PlacedComponent;
 import fr.kaeios.kpsl.gui.api.Point;
-import fr.kaeios.kpsl.gui.ArrivalSourceComponent;
 import fr.kaeios.kpsl.gui.views.MainView;
 
 import java.util.*;
-
-import fr.kaeios.kpsl.gui.BufferComponent;
-import fr.kaeios.kpsl.gui.ServiceComponent;
-import fr.kaeios.kpsl.impl.sources.PeriodicArrivalSource;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,13 +17,12 @@ import java.util.Set;
 
 public class DrawingVisitor implements ComponentVisitor {
 
+    private final PlacedComponentFactoryVisitor factory = new DefaultPlacedComponentFactory();
+
     private final Set<Component> visited = new HashSet<>();
     private final Map<Component, Point> positions = new HashMap<>();
     private final Map<Component, PlacedComponent> placeds = new HashMap<>();
     private final MainView view;
-
-    // Vertical index counter for placing leaves
-    private int currentRow = 0;
 
     // Layout spacing
     private static final int X_SPACING = 200;
@@ -98,8 +91,7 @@ public class DrawingVisitor implements ComponentVisitor {
             // Center parent vertically over children
             int firstChildRow = startRow;
             int lastChildRow = row - 1;
-            Point oldPos = positions.get(node);
-            positions.put(node, new Point(oldPos.x(), ((firstChildRow + lastChildRow) / 2) * Y_SPACING));
+            positions.computeIfPresent(node, (k, oldPos) -> new Point(oldPos.x(), ((firstChildRow + lastChildRow) / 2) * Y_SPACING));
         }
     }
 
@@ -118,23 +110,10 @@ public class DrawingVisitor implements ComponentVisitor {
 
         for (Component c : drawOrder) {
             Point p = positions.get(c);
-
-            PlacedComponent placedComponent = null;
-
-            if (c instanceof Buffer) {
-                placedComponent = new BufferComponent(p);
-            } else if (c instanceof Service) {
-                placedComponent = new ServiceComponent(p);
-            } else if (c instanceof PeriodicArrivalSource) {
-                placedComponent = new ArrivalSourceComponent(p);
-            }
-
-            if(placedComponent == null) continue;
-
-            placeds.put(c, placedComponent);
+            PlacedComponent placed = c.accept(factory, p);
+            placeds.put(c, placed);
+            view.addComponent(placed);
         }
-
-        placeds.values().forEach(view::addComponent);
 
         placeds.forEach((comp, graph) -> {
             comp.getOutputs().forEach(out -> {
@@ -145,7 +124,6 @@ public class DrawingVisitor implements ComponentVisitor {
             });
         });
     }
-
 
 
 }

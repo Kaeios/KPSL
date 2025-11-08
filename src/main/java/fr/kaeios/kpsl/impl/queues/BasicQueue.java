@@ -5,6 +5,9 @@ import fr.kaeios.kpsl.api.DispatchPolicy;
 import fr.kaeios.kpsl.api.Request;
 import fr.kaeios.kpsl.api.queue.Buffer;
 import fr.kaeios.kpsl.api.queue.QueueingPolicy;
+import fr.kaeios.kpsl.gui.api.PlacedComponent;
+import fr.kaeios.kpsl.gui.api.Point;
+import fr.kaeios.kpsl.gui.drawing.PlacedComponentFactoryVisitor;
 import fr.kaeios.kpsl.impl.BasicComponent;
 
 import java.util.*;
@@ -47,6 +50,11 @@ public class BasicQueue extends BasicComponent implements Buffer {
     @Override
     public boolean isBusy() {
         return false;
+    }
+
+    @Override
+    public PlacedComponent accept(PlacedComponentFactoryVisitor visitor, Point position) {
+        return visitor.visitBuffer(this, position);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class SimulationVisitor implements ComponentVisitor {
             current.onTick(timeStep);
 
             for (Component output : current.getOutputs()) {
-                if (visiteds.contains(output)) return;
+                if (visiteds.contains(output)) continue;
 
                 toVisit.add(output);
             }

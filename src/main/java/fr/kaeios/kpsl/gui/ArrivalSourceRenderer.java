@@ -1,14 +1,15 @@
 package fr.kaeios.kpsl.gui;
 
 import fr.kaeios.kpsl.gui.api.Renderer;
+import fr.kaeios.kpsl.impl.sources.PeriodicArrivalSource;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class ArrivalSourceRenderer implements Renderer {
+public class ArrivalSourceRenderer implements Renderer<PeriodicArrivalSource> {
 
     @Override
-    public Image render() {
+    public Image render(PeriodicArrivalSource ignored) {
         BufferedImage image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D graphics = image.createGraphics();

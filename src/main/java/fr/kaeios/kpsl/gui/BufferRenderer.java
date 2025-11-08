@@ -1,15 +1,16 @@
 package fr.kaeios.kpsl.gui;
 
+import fr.kaeios.kpsl.api.queue.Buffer;
 import fr.kaeios.kpsl.gui.api.Renderer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.stream.Collectors;
 
-public class BufferRenderer implements Renderer {
+public class BufferRenderer implements Renderer<Buffer> {
 
     @Override
-    public Image render() {
+    public Image render(Buffer component) {
         BufferedImage image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D graphics = image.createGraphics();
@@ -23,7 +24,7 @@ public class BufferRenderer implements Renderer {
             graphics.drawRect(i, 5, 50/3, 40);
 
 
-        String populationCountLabel =  String.format("%03d", 10).chars()
+        String populationCountLabel =  String.format("%03d", component.getPopulation().size()).chars()
                 .mapToObj(c -> String.valueOf((char) c))
                 .collect(Collectors.joining("   "));
 
